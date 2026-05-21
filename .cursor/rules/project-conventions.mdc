@@ -1,0 +1,25 @@
+---
+description: Convenzioni obbligatorie di progetto per Cursor
+globs: ["**/*.java", "**/*.md", "**/*.yaml", "**/*.yml"]
+alwaysApply: true
+---
+
+# Convenzioni di Progetto
+
+## Workflow obbligatorio
+
+- Prima di qualsiasi codice: spec in `docs/`
+- TDD: test prima dell'implementazione
+- PR review obbligatoria prima del merge
+- Commit atomici con Conventional Commits
+
+## Java
+
+- Java 21+, Maven, Spring Boot 3.x
+- Test: JUnit 5 + AssertJ + Mockito
+- Nessun secret nel codice
+
+## Skills disponibili
+
+Le skills in `.cursor/skills/` vengono usate automaticamente.
+Usa `/spec`, `/plan`, `/build`, `/test`, `/review`, `/ship` per navigare il workflow.

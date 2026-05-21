@@ -1,0 +1,32 @@
+# Java
+target/
+*.class
+*.jar
+*.war
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets & Environment
+.env
+.env.*
+*.pem
+*.key
+secrets/
+
+# Logs
+*.log
+logs/
+
+# Pre-commit
+.cache/
