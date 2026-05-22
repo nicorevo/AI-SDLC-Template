@@ -1,7 +1,6 @@
 # ai-sdlc-template
 
-> Archetipo di progetto per Cursor — SDLC AI-augmented con skills Osmani, Awesome Cursor e Java.
-
+> Archetipo di progetto per Cursor — SDLC AI-augmented con skills Osmani
 ## Quick Start
 
 1. Copia questa repo come base del tuo progetto
