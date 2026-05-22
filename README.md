@@ -20,7 +20,15 @@
 | Simplify   | `/code-simplify` | Clarity over cleverness  |
 | Ship       | `/ship`          | Faster is safer          |
 
-## Struttura
+Pre:
+Osmani Skills
+Installa tutte le skills da riga di comando (opzionale)
+npx skills add addyosmani/agent-skills --all --agent cursor
 
-Vedi `SDLC-Struttura-Repo.txt` per la struttura completa.
+Java Skills
+npx skills add jabrena/cursor-rules-java --all --agent cursor 
+
+Github Tools
+pip install pre-commit && pre-commit install
+
 Vedi `docs/agent-skills/using-agent-skills.md` per come usare le skills.
