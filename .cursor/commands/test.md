@@ -4,7 +4,8 @@
 
 Dimostra che il comportamento funziona con test mirati e ripetibili.
 
-Leggi e segui `.agents/skills/test-driven-development/SKILL.md`.
+Leggi e segui `.agents/skills/test-driven-development/SKILL.md` e integra con `.docs/agent-skills/test-driven-development.md`
+
 
 Usa gli argomenti del comando come ambito da verificare:
 

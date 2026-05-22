@@ -14,9 +14,9 @@ La spec è la fonte di verità. Il codice implementa la spec, non il contrario.
 ## Processo
 
 1. **Interview** — Usa `interview-me` se il requisito è vago
-2. **PRD** — Compila `docs/PRD-TEMPLATE.md` con obiettivi, acceptance criteria, out-of-scope
-3. **API Contract** — Se c'è un'API, compila `docs/API-CONTRACT-TEMPLATE.md` prima del codice e utilizza il template `docs/specs/openapi-example.yaml` per un nuovo file con la definizione delle api
-4. **ADR** — Documenta le decisioni architetturali significative in `docs/ADR-TEMPLATE.md`
+2. **PRD** — Compila `docs/template/PRD-TEMPLATE.md` con obiettivi, acceptance criteria, out-of-scope
+3. **API Contract** — Se c'è un'API, compila `docs/template/API-CONTRACT-TEMPLATE.md` prima del codice e utilizza il template `docs/standard/openapi-example.yaml` per un nuovo file con la definizione delle api
+4. **ADR** — Documenta le decisioni architetturali significative in `docs/template/ADR-TEMPLATE.md`
 5. **Review spec** — Fai revisionare la spec da un umano prima di procedere
 6. **Task breakdown** — Usa `planning-and-task-breakdown` per scomporre in task atomici
 

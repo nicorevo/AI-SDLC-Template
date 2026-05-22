@@ -10,6 +10,8 @@ Usa gli argomenti del comando come idea o richiesta iniziale:
 
 `$ARGUMENTS`
 
-Produci una specifica chiara in `docs/` oppure proponi il file da creare se manca contesto. Prima di procedere oltre la specifica, esplicita assunzioni, domande aperte, criteri di accettazione e confini del lavoro.
+Produci una specifica chiara in `docs/spec-general.md`. Prima di procedere oltre la specifica, esplicita assunzioni, domande aperte, criteri di accettazione e confini del lavoro.
 
 Leggi e segui `.docs/agent-skills/spec-driven-development.md`.
+
+Produci una specifica chiara in `docs/` utilizzando i template configurati, non cancellare i file prodotti precedentemente. Prima di procedere oltre la specifica, esplicita assunzioni, domande aperte, criteri di accettazione e confini del lavoro.

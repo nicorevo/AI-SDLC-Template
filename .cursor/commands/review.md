@@ -4,7 +4,8 @@
 
 Esegui una review di qualita' prima del merge.
 
-Leggi e segui `.agents/skills/code-review-and-quality/SKILL.md`.
+Leggi e segui `.agents/skills/code-review-and-quality/SKILL.md` e integra con  `.docs/agent-skills/security-and-hardening.md`
+
 
 Usa gli argomenti del comando come ambito della review:
 
