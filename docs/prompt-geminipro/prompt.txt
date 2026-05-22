@@ -1,0 +1,19 @@
+Passa come riferimento:
+https://github.com/nicorevo/AI-SDLC-Template
+
+Studia il template di progetto che ti propongo e preparati ad una sessione 
+di raccolta requisiti da lanciare con /spec
+
+...
+vorrei costruire un server node che mi tira fuori le quotazioni del bitcoin ogni 15 minuti. 
+non occorre autenticazione ne un db, ogni volta che lo chiamo deve fornire un numero che è la quotazione. 
+l'uri deve essere di tipo www.miodominio.txt/bitcoin e mi da il numero secco leggato alla quotazione. 
+descrivi il requisito funzionale e utilizza i template. 
+esegui il command /spec e compila i doc di specifica che scriveresti nella cartella /doc in formato md
+Visualizza su questa interfaccia come file di testo cosi posso fare copia e incolla
+...
+
+
+LA feature che devi implementare insiste su un progetto esistente.
+In allegato lo schema di progetto organizzato per cartelle e file in un file XML.
+Analizza la struttura di progetto e rivedi la documentazione.
