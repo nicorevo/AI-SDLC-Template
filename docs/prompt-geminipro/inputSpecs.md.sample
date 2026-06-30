@@ -1,0 +1,136 @@
+===============================================================================
+FILE: docs/spec-general.txt
+TITLE: Bitcoin Ticker - Specification Suite (Consolidated Plaintext)
+STATUS: draft
+CREATED: 2026-05-25
+AUTHOR: Gemini Collaborator
+AI-ASSISTED: true
+HUMAN-REVIEWED: false
+===============================================================================
+
+-------------------------------------------------------------------------------
+1. PRODUCT REQUIREMENTS DOCUMENT (PRD)
+-------------------------------------------------------------------------------
+
+### Objective
+Costruire un microservizio leggero in Node.js che esponga la quotazione attuale del Bitcoin aggiornata automaticamente ogni 15 minuti, garantendo risposte immediate ed eliminando overhead di autenticazione o persistenza su database.
+
+### Problem Statement
+Gli utenti e i sistemi integratori hanno bisogno di conoscere l'esatto prezzo di Bitcoin in tempo reale (approssimato a intervalli di 15 minuti) tramite un'interfaccia minimale e performante, riducendo al minimo la latenza di rete e i consumi computazionali.
+
+### Success Metrics
+- p99 delle risposte sotto i 50ms grazie alla lettura della cache in-memory.
+- Schedulatore di background che aggiorna la cache esattamente ogni 15 minuti.
+
+### User Stories
+AS A Sistema Integratore / Client CLI
+I WANT TO Richiedere l'endpoint /bitcoin
+SO THAT Posso ottenere il valore numerico puro della quotazione senza fare il parsing di complessi oggetti JSON
+
+### Acceptance Criteria
+- Il server deve esporre l'endpoint GET /bitcoin.
+- Il corpo della risposta deve essere un testo semplice (text/plain) contenente solo il numero della quotazione, ad esempio: 67420.50.
+- Non deve essere implementato alcun sistema di autenticazione, trattandosi di un'API pubblica.
+- Non deve essere configurato alcun database; lo stato è memorizzato unicamente in memoria.
+- Un worker/timer interno deve aggiornare la quotazione ogni 15 minuti esatti invocando un'API pubblica di terze parti.
+- In caso di fallimento dell'API di terze parti, il server deve continuare a servire l'ultimo prezzo valido (stale cache) o degradare con un errore controllato se la cache è vuota.
+
+### Out of Scope
+- Storico delle quotazioni o grafici.
+- Supporto a valute multiple (fissato di default in USD).
+- Pannelli di amministrazione o interfacce grafiche utente (UI).
+
+### Technical Constraints
+- Node.js 22 LTS + TypeScript 5.x in strict mode.
+- Express 5.x.
+- Vitest per la suite di test unitari e di integrazione.
+- Architettura In-Memory Cache senza Redis o database relazionali.
+
+### Open Questions
+- Quale API pubblica preferire come sorgente primaria per minimizzare i fallimenti di rete (es. CoinGecko vs Binance Public API)?
+- Dobbiamo arrotondare il valore all'intero più vicino o mantenere i decimali float? (Si assume float a due decimali di default).
+
+-------------------------------------------------------------------------------
+2. API CONTRACT
+-------------------------------------------------------------------------------
+
+Questo modulo definisce l'interfaccia pubblica del microservizio. Il codice deve conformarsi strettamente a questo schema.
+
+### Base URL
+http://localhost:8080
+
+### Authentication
+Nessuna autenticazione richiesta (Public Endpoint).
+
+### Endpoints
+
+#### GET /bitcoin
+
+Descrizione: Restituisce il valore numerico puro legato alla quotazione attuale di Bitcoin in USD, aggiornato negli ultimi 15 minuti.
+
+Request Example:
+GET /bitcoin HTTP/1.1
+Host: www.miodominio.txt
+Accept: text/plain
+
+Response 200 (Success):
+Content-Type: text/plain; charset=utf-8
+
+68250.45
+
+Response 503 (Service Unavailable):
+Content-Type: text/plain; charset=utf-8
+
+Error: Bitcoin price data unavailable. Retrying bootstrap fetch.
+
+### Error Codes
+- 404: Bad Request / Path non trovato (Formato: text/plain).
+- 503: Service Unavailable / Cache vuota (Formato: text/plain).
+
+-------------------------------------------------------------------------------
+3. ARCHITECTURE DECISION RECORD (ADR-001)
+-------------------------------------------------------------------------------
+
+### Status
+accepted
+
+### Deciders
+Gemini Collaborator, Human Engineer
+
+### Context
+Dobbiamo servire la quotazione di Bitcoin sul path /bitcoin restituendo un valore numerico puro. Il requisito esplicita che l'aggiornamento deve avvenire ogni 15 minuti e che non sono necessari database o sistemi di autenticazione. Dobbiamo decidere come gestire il recupero del dato dall'API esterna garantendo performance e resilienza.
+
+### Decision Drivers
+- Performance: La richiesta utente non deve subire la latenza del fetch verso l'API esterna di terze parti.
+- Rate Limiting: Le API di criptovalute pubbliche applicano severi rate-limit basati sull'IP. Chiamare l'API esterna a ogni richiesta utente porterebbe al blocco immediato del server.
+- Semplicità: Assenza di infrastrutture esterne come Redis o Postgres.
+
+### Considered Options
+1. On-Demand Fetching con Debounce/TTL: Il server scarica il prezzo dall'API esterna solo quando arriva una richiesta utente, memorizzandolo temporaneamente per 15 minuti prima di invalidarlo.
+2. Background Poll Loop (Scelta).
+
+### Decision Outcome
+Scelta: Opzione 2 (Background Poll Loop)
+
+Perché: Disaccoppia completamente le richieste client dal ciclo di vita delle API esterne. Il server effettuerà esattamente 4 richieste all'ora verso il provider di quotazioni, azzerando il rischio di rate-limiting indipendentemente dal volume di traffico generato dagli utenti finali. Le risposte degli utenti avranno una latenza vicina allo 0 (p95 < 5ms).
+
+### Consequences
+
+#### Positive
+- Latenza di risposta client minimizzata al tempo di IO di rete di Express con computazione quasi nulla.
+- Consumo di API esterne prevedibile e controllato fissato a 96 richieste al giorno totali.
+- Massima semplicità del codice e zero dipendenze architetturali esterne.
+
+#### Negative
+- Al boot del server (cold start), la prima richiesta client potrebbe fallire con un 503 se il primo fetch asincrono in background non si è ancora concluso. Questo comportamento è risolvibile eseguendo un fetch bloccante in fase di bootstrap prima dell'apertura della porta HTTP.
+
+### Pros and Cons of the Options
+
+#### Opzione 1: On-Demand Fetching
+- Pro: Se nessun utente interroga il server per ore, non viene effettuata alcuna chiamata inutile all'API esterna.
+- Con: Il primo utente dopo la scadenza dei 15 minuti subisce un ritardo dovuto alla latenza del server esterno. Se il server esterno risponde lentamente o fallisce, l'utente sperimenta direttamente il disservizio.
+
+#### Opzione 2: Background Poll Loop
+- Pro: Latenza zero per l'utente e isolamento dai guasti temporanei del server esterno. Se un fetch fallisce dopo 15 minuti, manteniamo in cache il valore precedente fino al tentativo successivo.
+- Con: Il server consuma banda anche se non ci sono utenti attivi, un fattore comunque trascurabile dato il payload infinitesimo di un ticker price.
+===============================================================================

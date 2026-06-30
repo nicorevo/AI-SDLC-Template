@@ -1,6 +1,10 @@
 Passa come riferimento:
-https://github.com/nicorevo/AI-SDLC-Template
+AI_env.XML
 
+Analizza le istruzioni contenute nel file. E' un file di progetto che contiene gli skills per 
+lo sviluppo software per una generica AI, raccontami che faresti se ti dicessi /spec
+
+o anche:
 Studia il template di progetto che ti propongo e preparati ad una sessione 
 di raccolta requisiti da lanciare con /spec
 
@@ -10,7 +14,7 @@ non occorre autenticazione ne un db, ogni volta che lo chiamo deve fornire un nu
 l'uri deve essere di tipo www.miodominio.txt/bitcoin e mi da il numero secco leggato alla quotazione. 
 descrivi il requisito funzionale e utilizza i template. 
 esegui il command /spec e compila i doc di specifica che scriveresti nella cartella /doc in formato md
-Visualizza su questa interfaccia come file di testo cosi posso fare copia e incolla
+raccogli tutto in un file unico con estenzione tx e visualizza
 ...
 
 

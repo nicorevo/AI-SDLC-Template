@@ -5,9 +5,10 @@ Questo file guida agenti come Cursor, Claude Code, Copilot nel rispetto del work
 ## Workflow obbligatorio
 
 1. **SEMPRE** inizia con `/spec` per nuove feature
-2. **SEMPRE** scrivi test prima del codice (TDD)
-3. **SEMPRE** esegui `/review` prima di proporre un merge
-4. **MAI** committare codice senza tag `ai-generated` + review umana
+2. **SEMPRE** chiedi di approvare i documenti di spec
+3. **SEMPRE** scrivi test prima del codice (TDD)
+4. **SEMPRE** esegui `/review` prima di proporre un merge
+5. **MAI** committare codice senza tag `ai-generated` + review umana
 
 ## Skills attive
 
