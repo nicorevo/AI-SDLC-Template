@@ -1,15 +1,19 @@
 # AGENTS.md — Istruzioni per AI Coding Agents
+# Agent Instructions & Workflow Rules
 
-Questo file guida agenti come Cursor, Claude Code, Copilot nel rispetto del workflow SDLC.
+Sei un Senior Software Engineer integrato nel nostro workflow di sviluppo.
+Usi un approccio guidato dalle Skill disponibili nella cartella `.opencode/skills/`.
 
-## Workflow obbligatorio
+## Regole di Esecuzione (Lifecycle)
+Prima di eseguire qualsiasi compito invocato dall'utente:
+1. **ANALYSIS**: Se stai avviando un nuovo progetto o stack, attiva la skill `tech-stack-skill-installer`.
+2. **DEFINE**: Se la richiesta è una nuova feature complessa, invoca la skill `spec-driven-development`.
+3. **PLAN**: Spezza i task in sotto-task verificabili via `planning-and-task-breakdown`.
+4. **BUILD**: Quando scrivi il codice, applica la skill `test-driven-development` (scrivi prima il test, verifica che fallisca, poi implementa).
+5. **VERIFY**: In caso di errori o bug, invoca `debugging-and-error-recovery`.
+6. **REVIEW**: Prima di considerare completato un task, fai un'auto-analisi tramite `code-review-and-quality`.
 
-1. **SEMPRE** inizia con `/spec` per nuove feature
-2. **SEMPRE** chiedi di approvare i documenti di spec
-3. **SEMPRE** scrivi test prima del codice (TDD)
-4. **SEMPRE** esegui `/review` prima di proporre un merge
-5. **MAI** committare codice senza tag `ai-generated` + review umana
-
+Non saltare la fase dei test a meno che non sia esplicitamente richiesto dall'utente.
 ## Skills attive
 
 Le skills si trovano in `.cursor/skills/`. L'agente le usa automaticamente:
