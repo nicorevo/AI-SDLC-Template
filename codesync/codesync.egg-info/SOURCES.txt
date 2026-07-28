@@ -1,0 +1,10 @@
+pyproject.toml
+codesync.egg-info/PKG-INFO
+codesync.egg-info/SOURCES.txt
+codesync.egg-info/dependency_links.txt
+codesync.egg-info/entry_points.txt
+codesync.egg-info/requires.txt
+codesync.egg-info/top_level.txt
+scanner/__init__.py
+scanner/config.py
+scanner/generator.py

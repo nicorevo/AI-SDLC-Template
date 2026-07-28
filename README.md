@@ -14,7 +14,7 @@ AI-driven software development lifecycle. Skills, agent personas, checklists, an
 ```
 ├── .opencode/              # Core: skills, agents, guides, hooks, evals
 │   ├── skills/             # 25 skills (spec-driven-development, test-driven-development, etc.)
-│   ├── agents/             # 9 agent personas + AGENTS.MD routing table
+│   ├── agents/             # 9 agent personas + AGENTS.md routing table
 │   ├── guide/              # Setup guides (OpenCode, Copilot, adoption paths, onboarding)
 │   ├── references/         # Checklists (security, testing, performance, accessibility, observability)
 │   ├── evals/              # Tier 1-3 evaluation framework for skills
