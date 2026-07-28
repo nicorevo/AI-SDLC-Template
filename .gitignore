@@ -10,7 +10,6 @@ target/
 # IDE
 .idea/
 *.iml
-.vscode/
 *.swp
 
 # OS
