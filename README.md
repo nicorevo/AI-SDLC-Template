@@ -52,26 +52,39 @@ ln -sf /path/to/AI-SDLC-Template/.opencode .github
 
 ### Development workflow (guided by intent)
 
-The agent auto-routes to the right skill based on your request:
+The agent auto-routes to the right skill based on your request. Full routing table from [AGENTS.md](AGENTS.md):
 
-| You say                                    | Agent does                                                  |
-| :---                                       | :---                                                        |
-| "New feature request"                      | `spec-driven-development` → `planning-and-task-breakdown`   |
-| "Implement this"                           | `incremental-implementation` + `test-driven-development`    |
-| "Fix this bug"                             | `debugging-and-error-recovery`                              |
-| "Review this PR"                           | `code-review-and-quality`                                   |
-| "Security issues?"                         | `security-and-hardening`                                    |
-| "Approve for production"                   | `shipping-and-launch` (`/ship` fans out to review panels)   |
+| Intent                              | Agent              | Skills                              | Output                                  |
+| :---                                | :---               | :---                                | :---                                    |
+| New idea / vague requirements       | `software-architect` | `interview-me`, `idea-refine`        | Refined `SPEC.md`                       |
+| Specs / architecture                | `software-architect` | `spec-driven-development`, `api-and-interface-design`, `documentation-and-adrs` | `SPEC.md`, API contracts, ADR |
+| Task breakdown / estimation         | `tech-lead-planner` | `planning-and-task-breakdown`         | `tasks/plan.md` with vertical subtasks  |
+| Code development / features         | `fullstack-developer` | `test-driven-development`, `incremental-implementation` | Tested code + atomic commits |
+| Bug / errors / CI failure           | `root-cause-debugger` | `debugging-and-error-recovery`, `browser-testing-with-devtools` | Reproduction + fix + regression tests |
+| Code review / merge                 | `code-reviewer`     | `code-review-and-quality`, `code-simplification` | Multi-axis review report |
+| Security audit                      | `security-auditor`  | `security-and-hardening`              | OWASP vulnerability report              |
+| Web performance audit               | `web-performance-auditor` | `performance-optimization`         | Core Web Vitals scorecard               |
+| Release / deploy / migration        | `release-engineer`  | `shipping-and-launch`, `ci-cd-and-automation`, `observability-and-instrumentation` | Go/No-Go checklist + rollback plan |
 
 No slash commands needed in OpenCode — intent mapping handles routing automatically.
 
 ## Lifecycle
 
-Every task flows through these phases (agent enforces, never skips):
+Every task flows through these phases (agent enforces, never skips). Full rules from [AGENTS.md](AGENTS.md):
 
 ```
 DEFINE → PLAN → BUILD → VERIFY → REVIEW → SHIP
 ```
+
+### 5 Non-Negotiable Rules
+
+| #   | Rule             | What it means                                                  |
+| :--- | :---           | :---                                                           |
+| 1   | **DEFINE FIRST**  | No production code without a `SPEC.md` or clear objective      |
+| 2   | **PLAN IN SLICES**| Every feature split into thin, verifiable vertical slices (`tasks/plan.md`) |
+| 3   | **TEST FIRST**    | Write the failing test first, then the minimal code to make it pass |
+| 4   | **NO UNVERIFIED** | Task not "done" until native test suite runs clean             |
+| 5   | **CLEAN COMMIT**  | Small, atomic commits with imperative messages                 |
 
 - **DEFINE**: `SPEC.md` before production code
 - **PLAN**: Vertical slices in `tasks/plan.md`
