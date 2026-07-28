@@ -10,6 +10,8 @@ import pytest
 from scanner.config import Config, ScannerConfig
 from scanner.generator import generate_project_xml
 
+# ai-generated: Codex | human-reviewed: no | date: 2026-07-28
+
 
 def _create_fixture_tree(tmp_path: Path, files: dict) -> Path:
     """Create a temporary directory structure for testing."""
@@ -181,9 +183,75 @@ def test_config_invalid_dir(tmp_path: Path) -> None:
         Config.from_env()
 
 
+def test_snapshot_config_defaults_to_codesync_data(tmp_path: Path) -> None:
+    """Snapshot defaults are safe and independent from the scanned project."""
+    cfg = Config.from_env(str(tmp_path))
+
+    assert cfg.snapshot.interval_seconds == 180
+    assert cfg.snapshot.output_path.endswith("codesync/data/project-context.xml")
+
+
+def test_snapshot_config_environment_overrides_yaml(tmp_path: Path, monkeypatch) -> None:
+    """Environment values take precedence over snapshot YAML values."""
+    import yaml
+
+    yaml_path = tmp_path / "codesync.yaml"
+    yaml_path.write_text(
+        yaml.safe_dump(
+            {
+                "snapshot": {
+                    "interval_seconds": 120,
+                    "output_path": "yaml/project.xml",
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("PROJECT_ROOT", str(tmp_path))
+    monkeypatch.setenv("CODESYNC_CONFIG", str(yaml_path))
+    monkeypatch.setenv("CODESYNC_INTERVAL_SECONDS", "300")
+    monkeypatch.setenv("CODESYNC_OUTPUT_PATH", "env/project.xml")
+
+    cfg = Config.from_env(config_path=str(yaml_path))
+
+    assert cfg.project_root == str(tmp_path)
+    assert cfg.snapshot.interval_seconds == 300
+    assert cfg.snapshot.output_path.endswith("codesync/env/project.xml")
+
+
+@pytest.mark.parametrize("value", ["-1", "invalid"])
+def test_snapshot_interval_rejects_invalid_values(
+    tmp_path: Path, monkeypatch, value: str
+) -> None:
+    """Invalid intervals fail during configuration instead of at runtime."""
+    monkeypatch.setenv("PROJECT_ROOT", str(tmp_path))
+    monkeypatch.setenv("CODESYNC_INTERVAL_SECONDS", value)
+
+    with pytest.raises(ValueError, match="CODESYNC_INTERVAL_SECONDS"):
+        Config.from_env()
+
+
+def test_snapshot_interval_rejects_invalid_yaml(
+    tmp_path: Path, monkeypatch, value: str = "invalid"
+) -> None:
+    """Invalid YAML interval reports the same configuration boundary."""
+    import yaml
+
+    yaml_path = tmp_path / "codesync.yaml"
+    yaml_path.write_text(
+        yaml.safe_dump({"snapshot": {"interval_seconds": value}}), encoding="utf-8"
+    )
+    monkeypatch.setenv("PROJECT_ROOT", str(tmp_path))
+
+    with pytest.raises(ValueError, match="snapshot interval"):
+        Config.from_env(config_path=str(yaml_path))
+
+
 @pytest.fixture(autouse=True)
 def clean_env():
     """Clean PROJECT_ROOT and CODESYNC_CONFIG env vars after each test."""
     yield
     os.environ.pop("PROJECT_ROOT", None)
     os.environ.pop("CODESYNC_CONFIG", None)
+    os.environ.pop("CODESYNC_INTERVAL_SECONDS", None)
+    os.environ.pop("CODESYNC_OUTPUT_PATH", None)

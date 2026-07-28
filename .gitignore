@@ -23,6 +23,10 @@ Thumbs.db
 *.key
 secrets/
 .venv
+__pycache__/
+.pytest_cache/
+*.py[cod]
+codesync/data/
 
 # Logs
 *.log

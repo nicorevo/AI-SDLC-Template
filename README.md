@@ -68,6 +68,46 @@ The agent auto-routes to the right skill based on your request. Full routing tab
 
 No slash commands needed in OpenCode — intent mapping handles routing automatically.
 
+## Codesync XML service
+
+Codesync pubblica uno snapshot XML persistente della directory indicata, pensato
+per fornire struttura e contenuti del progetto a una AI che può accedere soltanto
+tramite prompt o URL. Lo snapshot viene creato prima che il servizio sia pronto e
+rigenerato periodicamente; `GET /` legge sempre il file già pubblicato.
+
+Avvio locale dalla root del repository:
+
+```bash
+# ai-generated: Codex | human-reviewed: no | date: 2026-07-28
+cd codesync
+source .venv/bin/activate
+python main.py --host 127.0.0.1 --port 9000 --project-root ..
+```
+
+Endpoint operativi:
+
+- `GET /` restituisce l'ultimo XML valido senza effettuare una scansione.
+- `POST /refresh` forza una rigenerazione sincrona.
+- `GET /health` espone stato, timestamp, durata, dimensione e intervallo.
+
+Configurazione in `codesync/config.yaml`:
+
+```yaml
+# ai-generated: Codex | human-reviewed: no | date: 2026-07-28
+snapshot:
+  interval_seconds: 180
+  output_path: "data/project-context.xml"
+```
+
+`CODESYNC_INTERVAL_SECONDS` e `CODESYNC_OUTPUT_PATH` sovrascrivono i valori YAML.
+Un intervallo pari a `0` disabilita il timer, ma conserva refresh iniziale e
+manuale. Se un aggiornamento fallisce, il servizio continua a pubblicare l'ultimo
+snapshot valido e `/health` passa a `degraded`.
+
+L'MVP supporta un solo worker e non implementa autenticazione. Mantieni il bind su
+`127.0.0.1`; non esporre Codesync su reti non fidate perché l'XML contiene il
+codice sorgente del progetto.
+
 ## Lifecycle
 
 Every task flows through these phases (agent enforces, never skips). Full rules from [AGENTS.md](AGENTS.md):

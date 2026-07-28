@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Codesync entry point — starts the FastAPI server.
 
 Usage:
@@ -16,8 +15,8 @@ from __future__ import annotations
 import argparse
 import os
 
-from scanner.config import Config
 from app import run_server
+from scanner.config import Config
 
 
 def main() -> None:

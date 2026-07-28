@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+import fnmatch
 import os
 import pathlib
-import fnmatch
 from xml.sax.saxutils import escape
-from typing import List
 
 from .config import Config, ScannerConfig
+
+# ai-generated: Codex | human-reviewed: no | date: 2026-07-28
 
 
 ALWAYS_SKIP_DIRS = {
@@ -28,10 +29,10 @@ ALWAYS_SKIP_DIRS = {
 }
 
 
-def load_gitignore_patterns(root_dir: str) -> List[str]:
+def load_gitignore_patterns(root_dir: str) -> list[str]:
     """Carica i pattern dal .gitignore nella root del progetto."""
     gitignore_path = os.path.join(root_dir, ".gitignore")
-    patterns: List[str] = []
+    patterns: list[str] = []
     if os.path.isfile(gitignore_path):
         with open(gitignore_path, encoding="utf-8", errors="ignore") as f:
             for line in f:
@@ -42,7 +43,7 @@ def load_gitignore_patterns(root_dir: str) -> List[str]:
 
 
 def is_ignored_by_gitignore(
-    rel_path: str, patterns: List[str], is_dir: bool
+    rel_path: str, patterns: list[str], is_dir: bool
 ) -> bool:
     """Controlla se un path relativo corrisponde a uno dei pattern .gitignore."""
     name = os.path.basename(rel_path)
@@ -102,15 +103,30 @@ def read_file_content(filepath: str, max_file_size: int) -> str | None:
         return None
 
 
+def is_snapshot_artifact(filepath: str, snapshot_path: str | None) -> bool:
+    """Exclude only the configured snapshot and its adjacent temporary files."""
+    if not snapshot_path:
+        return False
+    candidate = os.path.abspath(filepath)
+    snapshot = os.path.abspath(snapshot_path)
+    if candidate == snapshot:
+        return True
+    snapshot_name = os.path.basename(snapshot)
+    return (
+        os.path.dirname(candidate) == os.path.dirname(snapshot)
+        and os.path.basename(candidate).startswith(f".{snapshot_name}.")
+        and candidate.endswith(".tmp")
+    )
 def build_tree_lines(
     root_dir: str,
-    gitignore_patterns: List[str],
+    gitignore_patterns: list[str],
     scanner_cfg: ScannerConfig,
     prefix: str = "",
     rel_base: str = "",
-) -> List[str]:
+    snapshot_path: str | None = None,
+) -> list[str]:
     """Costruisce le linee dell'albero tipo 'tree' per l'abstract."""
-    tree: List[str] = []
+    tree: list[str] = []
     try:
         entries = sorted(os.listdir(root_dir))
     except PermissionError:
@@ -118,10 +134,12 @@ def build_tree_lines(
 
     binary_exts = set(scanner_cfg.binary_extensions)
 
-    dirs: List[tuple] = []
-    files: List[str] = []
+    dirs: list[tuple] = []
+    files: list[str] = []
     for e in entries:
         full = os.path.join(root_dir, e)
+        if is_snapshot_artifact(full, snapshot_path):
+            continue
         rel = os.path.join(rel_base, e) if rel_base else e
         is_d = os.path.isdir(full)
         if e in scanner_cfg.skip_dirs:
@@ -151,6 +169,7 @@ def build_tree_lines(
                     scanner_cfg,
                     prefix + extension,
                     rel_path,
+                    snapshot_path,
                 )
             )
         else:
@@ -160,13 +179,14 @@ def build_tree_lines(
 
 def folder_to_xml(
     root_dir: str,
-    gitignore_patterns: List[str],
+    gitignore_patterns: list[str],
     scanner_cfg: ScannerConfig,
     indent: int = 2,
     rel_base: str = "",
-) -> List[str]:
+    snapshot_path: str | None = None,
+) -> list[str]:
     """Converte ricorsivamente una cartella in nodi XML."""
-    xml_lines: List[str] = []
+    xml_lines: list[str] = []
     pad = " " * indent
 
     try:
@@ -178,6 +198,8 @@ def folder_to_xml(
 
     for entry in entries:
         full_path = os.path.join(root_dir, entry)
+        if is_snapshot_artifact(full_path, snapshot_path):
+            continue
         rel_path = os.path.join(rel_base, entry) if rel_base else entry
         is_d = os.path.isdir(full_path)
 
@@ -196,6 +218,7 @@ def folder_to_xml(
                     scanner_cfg,
                     indent + 2,
                     rel_path,
+                    snapshot_path,
                 )
             )
             xml_lines.append(f"{pad}</fld>")
@@ -217,9 +240,9 @@ def folder_to_xml(
     return xml_lines
 
 
-def generate_abstract(root_dir: str, tree_lines: List[str]) -> str:
+def generate_abstract(root_dir: str, tree_lines: list[str]) -> str:
     """Genera un abstract in Markdown che descrive il progetto."""
-    import datetime
+    from datetime import UTC, datetime
 
     project_name = os.path.basename(os.path.abspath(root_dir))
     readme_content: str | None = None
@@ -229,10 +252,10 @@ def generate_abstract(root_dir: str, tree_lines: List[str]) -> str:
             readme_content = read_file_content(rpath, 500 * 1024)
             break
 
-    lines: List[str] = []
+    lines: list[str] = []
     lines.append(f"# Progetto: {project_name}\n")
     lines.append(
-        f"**Data generazione contesto:** {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+        f"**Data generazione contesto:** {datetime.now(UTC).strftime('%Y-%m-%d %H:%M:%S %Z')}\n"
     )
 
     if readme_content:
@@ -254,13 +277,18 @@ def generate_project_xml(root_dir: str, config: Config) -> str:
     scanner_cfg = config.scanner
 
     # 1. Costruisci albero per abstract
-    tree_lines = build_tree_lines(root_dir, gitignore_patterns, scanner_cfg)
+    snapshot_path = config.snapshot.output_path or None
+    tree_lines = build_tree_lines(
+        root_dir, gitignore_patterns, scanner_cfg, snapshot_path=snapshot_path
+    )
 
     # 2. Genera abstract markdown
     abstract = generate_abstract(root_dir, tree_lines)
 
     # 3. Genera struttura XML
-    xml_body = folder_to_xml(root_dir, gitignore_patterns, scanner_cfg)
+    xml_body = folder_to_xml(
+        root_dir, gitignore_patterns, scanner_cfg, snapshot_path=snapshot_path
+    )
 
     # 4. Assembla il documento
     safe_abstract = abstract.replace("]]>", "]]]]><![CDATA[>")

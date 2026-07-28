@@ -8,6 +8,10 @@ service:
   cors_origins:
     - "*"
 
+snapshot:
+  interval_seconds: 180
+  output_path: "data/project-context.xml"
+
 # Scanning configuration
 scanner:
   # Comma-separated list of directories to always skip
