@@ -42,6 +42,29 @@ ln -sf .opencode .claude
 ln -sf .opencode .github
 ```
 
+### Setup Tool
+
+`clona-ai-sdlc-template.py` automated clones the template into a new project with a fresh Git repository:
+
+```bash
+python3 clona-ai-sdlc-template.py [URL_TEMPLATE] [NOME_PROGETTO] [DESTINAZIONE]
+
+# Interactive mode (prompts for each value):
+python3 clona-ai-sdlc-template.py
+
+# Non-interactive mode:
+python3 clona-ai-sdlc-template.py https://github.com/org/template-repo my-project /path/to/parent
+```
+
+**Features:**
+- Shallow clone (`--depth 1`) for speed
+- Removes original `.git` history and initializes a fresh repository
+- Renames default branch to `main`
+- Auto-detects template URL from the script's parent repository
+- Interactive prompts with sensible defaults (URL, project name, destination)
+
+**Prerequisites:** `Python 3.6+`, `git`
+
 ### Use in an existing project
 
 ```bash
