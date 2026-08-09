@@ -1,5 +1,3 @@
 ln -s .opencode .claude
 ln -s .opencode .github
-
-mkdir -p .agents
-ln -s ../.opencode/skills .agents/skills   CODEX GPT PRO
+ln -s .opencode/ .agents

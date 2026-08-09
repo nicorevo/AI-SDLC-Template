@@ -59,7 +59,7 @@ python3 clona-ai-sdlc-template.py https://github.com/org/template-repo my-projec
 **Features:**
 - Shallow clone (`--depth 1`) for speed
 - Removes original `.git` history and initializes a fresh repository
-- Renames default branch to `main`
+- Clones only the `opcl` branch and initializes the new repository on `main`
 - Auto-detects template URL from the script's parent repository
 - Interactive prompts with sensible defaults (URL, project name, destination)
 

@@ -5,6 +5,12 @@ import subprocess
 import sys
 
 
+SOURCE_BRANCH = "opcl"
+TARGET_BRANCH = "main"
+
+# ai-generated: Codex | human-reviewed: no | date: 2026-08-09
+
+
 def ottieni_remote_origin(cwd="."):
     """Tenta di leggere l'URL del remote origin del repository corrente."""
     try:
@@ -41,7 +47,17 @@ def crea_progetto_da_template(repo_url, nome_progetto, destinazione):
 
     try:
         subprocess.run(
-            ["git", "clone", "--depth", "1", repo_url, nome_progetto],
+            [
+                "git",
+                "clone",
+                "--depth",
+                "1",
+                "--branch",
+                SOURCE_BRANCH,
+                "--single-branch",
+                repo_url,
+                nome_progetto,
+            ],
             cwd=destinazione,
             check=True,
         )
@@ -58,7 +74,9 @@ def crea_progetto_da_template(repo_url, nome_progetto, destinazione):
     # 3. Inizializzazione del nuovo repository Git
     print("🚀 Inizializzazione del nuovo repository...")
     try:
-        subprocess.run(["git", "init"], cwd=path_progetto, check=True)
+        subprocess.run(
+            ["git", "init", "-b", TARGET_BRANCH], cwd=path_progetto, check=True
+        )
         subprocess.run(["git", "add", "."], cwd=path_progetto, check=True)
 
         # Configura user per il commit se non presente
@@ -79,14 +97,6 @@ def crea_progetto_da_template(repo_url, nome_progetto, destinazione):
             ["git", "commit", "-m", "Initial commit dal template"],
             cwd=path_progetto,
             check=True,
-        )
-
-        # Renaming del branch in 'main' se esiste
-        subprocess.run(
-            ["git", "branch", "-m", "main"],
-            cwd=path_progetto,
-            check=True,
-            capture_output=True,
         )
 
         print(f"\n{'='*50}")
