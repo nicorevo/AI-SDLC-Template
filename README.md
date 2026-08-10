@@ -2,6 +2,33 @@
 
 AI-driven software development lifecycle. Skills, agent personas, checklists, and evals for Claude Code, OpenCode, GitHub Copilot, and Cursor.
 
+Its core is .opencode/, which provides:
+
+  - 25+ reusable engineering skills: requirements, planning, TDD, debugging, security, reviews, releases, etc.
+  - Specialized agent personas for architecture, development, debugging, security, performance, review, and releases.
+  - Intent routing in AGENTS.md, so a request like “build a feature” or “audit security” maps to the required workflow and expected outputs.
+  - Guides, checklists, hooks, and evaluation tooling for using the system with OpenCode, Claude Code, Copilot, and Cursor.
+
+  The lifecycle it enforces is:
+
+  DEFINE → PLAN → BUILD → VERIFY → REVIEW → SHIP
+
+  Key rules include having a spec before production code, planning features as vertical slices, test-first implementation, verified test runs, and
+  small atomic commits. It standardizes Java/Spring, C#/.NET, Node/TypeScript, and Python/FastAPI projects.
+
+  It also includes a working Python/FastAPI service under codesync/. Codesync scans a project and generates a persistent XML snapshot containing its
+  structure and text-file contents, so an AI can consume repository context through a URL or prompt. It:
+
+  - Generates the snapshot at startup and periodically (default: every 180 seconds).
+  - Serves the existing XML through GET / without rescanning.
+  - Supports manual refresh with POST /refresh.
+  - Exposes status and metadata through GET /health.
+  - Uses atomic file replacement and retains the last valid snapshot if refresh fails.
+  - Is intentionally localhost-oriented and unauthenticated, because its XML can contain source code.
+
+  Finally, clona-ai-sdlc-template.py bootstraps a fresh project from this template, resets Git history, and supports symlinking .opencode
+  into .claude and .github so multiple AI tools share the same workflow rules.
+
 ## TL;DR
 
 - Load skills from `.opencode/skills/` to enforce TDD, review gates, security audits, and structured specification
