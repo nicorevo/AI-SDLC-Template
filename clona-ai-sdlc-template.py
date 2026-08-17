@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 import os
 import shutil
 import subprocess
@@ -7,6 +8,20 @@ import sys
 
 SOURCE_BRANCH = "opcl"
 TARGET_BRANCH = "main"
+
+# Materiale utile per mantenere il template, ma non necessario nei progetti
+# applicativi generati dal cloner.
+TEMPLATE_ONLY_PATHS = (
+    ".opencode/evals",
+    ".opencode/guide",
+    ".opencode/hooks",
+    ".opencode/plans",
+    ".opencode/linkToClaude.txt",
+    "codesync",
+    "docs",
+    "prj-context-extract.py",
+    "clona-ai-sdlc-template.py",
+)
 
 # ai-generated: Codex | human-reviewed: no | date: 2026-08-09
 
@@ -37,6 +52,16 @@ def chiedi_input(messaggio, default=None):
     return risposta if risposta else default
 
 
+def rimuovi_file_template(path_progetto):
+    """Rimuove dal progetto clonato il materiale interno al template."""
+    for relative_path in TEMPLATE_ONLY_PATHS:
+        target = os.path.join(path_progetto, relative_path)
+        if os.path.islink(target) or os.path.isfile(target):
+            os.unlink(target)
+        elif os.path.isdir(target):
+            shutil.rmtree(target)
+
+
 def crea_progetto_da_template(repo_url, nome_progetto, destinazione):
     # 1. Clone shallow (solo l'ultimo commit per essere veloci)
     print(f"\n📦 Clonazione del template in corso...")
@@ -64,6 +89,9 @@ def crea_progetto_da_template(repo_url, nome_progetto, destinazione):
     except subprocess.CalledProcessError:
         print("❌ Errore durante il git clone. Verifica l'URL.")
         return
+
+    print("🧹 Rimozione del materiale interno al template...")
+    rimuovi_file_template(path_progetto)
 
     # 2. Rimozione della cartella .git originale
     git_dir = os.path.join(path_progetto, ".git")
@@ -111,7 +139,17 @@ def crea_progetto_da_template(repo_url, nome_progetto, destinazione):
         )
 
 
-if __name__ == "__main__":
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="Clona il template AI-SDLC")
+    parser.add_argument("url", nargs="?", help="URL del repository template")
+    parser.add_argument("nome", nargs="?", help="Nome del nuovo progetto")
+    parser.add_argument(
+        "destinazione",
+        nargs="?",
+        help="Cartella che conterrà il nuovo progetto",
+    )
+    args = parser.parse_args(argv)
+
     print("=" * 50)
     print("  AI-SDLC Template Cloner")
     print("=" * 50)
@@ -121,17 +159,21 @@ if __name__ == "__main__":
     url_template = ottieni_remote_origin(script_dir)
 
     # Input interattivo
-    url = chiedi_input("📡 URL del template Git", url_template)
+    url = args.url or chiedi_input("📡 URL del template Git", url_template)
     if not url:
         print("❌ L'URL del template è obbligatorio. Exiting.")
         sys.exit(1)
 
     # Suggerisci nome dal nome della cartella del repo
     repo_name = url.rstrip("/").split("/")[-1].replace(".git", "")
-    nome = chiedi_input("✨ Nome del nuovo progetto", repo_name)
+    nome = args.nome or chiedi_input("✨ Nome del nuovo progetto", repo_name)
     nome = nome if nome else repo_name
 
-    dest = chiedi_input("📁 Cartella di destinazione", ".")
+    dest = args.destinazione or chiedi_input("📁 Cartella di destinazione", ".")
 
     print()
     crea_progetto_da_template(url, nome, dest)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,2 +1,0 @@
-[console_scripts]
-codesync = app:run_server

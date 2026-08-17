@@ -1,3 +1,0 @@
-ln -s .opencode .claude
-ln -s .opencode .github
-ln -s .opencode/ .agents
