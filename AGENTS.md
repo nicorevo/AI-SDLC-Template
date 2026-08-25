@@ -1,35 +1,58 @@
-# AGENTS.md — Istruzioni per AI Coding Agents
+# Istruzioni per gli agenti
 
-Questo file guida agenti come Cursor, Claude Code, Copilot nel rispetto del workflow SDLC.
+Questo progetto usa le skill e le persone definite in `.opencode/`.
+Mantieni questo file specifico del progetto: descrive convenzioni, comandi e
+vincoli che l'agente deve conoscere sempre. Le skill dettagliate stanno in
+`.opencode/skills/` e vanno caricate on demand, non tutte insieme.
 
-## Workflow obbligatorio
+## Routing degli intenti
 
-1. **SEMPRE** inizia con `/spec` per nuove feature
-2. **SEMPRE** chiedi di approvare i documenti di spec
-3. **SEMPRE** scrivi test prima del codice (TDD)
-4. **SEMPRE** esegui `/review` prima di proporre un merge
-5. **MAI** committare codice senza tag `ai-generated` + review umana
+Identifica l'intento dell'utente e attiva l'agente e le skill corrispondenti
+prima di eseguire qualsiasi operazione:
 
-## Skills attive
+| Intento Utente | Agente Principale | Skill Obbligatorie | Output Atteso |
+| :--- | :--- | :--- | :--- |
+| Nuova Idea / Requisiti Vaghi | `software-architect` | `interview-me`, `idea-refine` | `docs/SPEC.md` raffinato |
+| Specifiche / Architettura | `software-architect` | `spec-driven-development`, `api-and-interface-design`, `documentation-and-adrs` | `docs/SPEC.md`, contratti API, ADR |
+| Breakdown Task / Stima | `tech-lead-planner` | `planning-and-task-breakdown` | `tasks/plan.md` con sotto-task verticali |
+| Sviluppo Codice / Feature | `fullstack-developer` | `test-driven-development`, `incremental-implementation` | Codice testato + Commit Atomici |
+| Test / QA / Coverage | `test-engineer` | `test-driven-development` | Test suite + analisi copertura |
+| Bug / Errori / CI Fallita | `root-cause-debugger` | `debugging-and-error-recovery`, `browser-testing-with-devtools` | Riproduzione + Fix + Test di Regressione |
+| Code Review / Merge | `code-reviewer` | `code-review-and-quality`, `code-simplification` | Report multi-asse con severità |
+| Audit Sicurezza | `security-auditor` | `security-and-hardening` | Report vulnerabilità OWASP |
+| Audit Performance Web | `web-performance-auditor` | `performance-optimization` | Scorecard Core Web Vitals |
+| Release / Deploy / Migration | `release-engineer` | `shipping-and-launch`, `ci-cd-and-automation`, `observability-and-instrumentation` | Checklist Go/No-Go + Rollback Plan |
 
-Le skills si trovano in `.cursor/skills/`. L'agente le usa automaticamente:
-- `spec-driven-development` → attivata all'inizio di ogni feature
-- `test-driven-development` → attivata su ogni modifica di logica
-- `code-review-and-quality` → attivata prima di ogni merge
-- `security-and-hardening` → attivata su input utente, auth, storage
-- `git-workflow-and-versioning` → attivata su ogni commit
-- `java-development` → attivata su codice Java/Maven/Spring
+## Regole del ciclo di vita
 
-## Regole di comportamento
+Non saltare mai i passaggi del ciclo di vita a meno che non sia esplicitamente
+richiesto dall'utente:
 
-- Dimensione massima PR: ~100 righe di codice significativo
-- Ogni commit deve essere atomico e compilabile
-- Test pyramid: 80% unit / 15% integration / 5% e2e
-- Documentare il PERCHÉ nelle ADR, non solo il COSA
+1. DEFINE FIRST: nessun codice di produzione senza `docs/SPEC.md` o un obiettivo chiaro.
+2. PLAN IN SLICES: ogni feature divisa in fette verticali verificabili (`tasks/plan.md`).
+3. TEST FIRST (TDD): prima il test che fallisce, poi il minimo codice per farlo passare.
+4. NO UNVERIFIED CODE: non dichiarare completato un task senza aver eseguito test e lint nativi.
+5. CLEAN COMMIT: commit piccoli e atomici con messaggi imperativi.
 
-## Tracciabilità AI
+## Regole operative
 
-Ogni blocco di codice generato dall'AI deve includere:
-```
-// ai-generated: [tool] | human-reviewed: [yes/no] | date: YYYY-MM-DD
-```
+- Leggi le istruzioni pertinenti prima di modificare il codice.
+- Attiva solo le skill necessarie all'intento e alla superficie modificata.
+- Mantieni le modifiche focalizzate e non introdurre dipendenze o architetture
+  non richieste.
+- Non inserire segreti nel repository e tratta i dati provenienti da utenti,
+  file, API e agenti come non attendibili ai confini del sistema.
+
+## Convenzioni del progetto
+
+- Comandi di test, lint, build e avvio: documentali qui quando il progetto li
+  stabilisce.
+- Convenzioni generali: `CODING-STANDARDS.md`.
+- Requisiti di sicurezza: `SECURITY.md`.
+
+## Criteri di verifica
+
+- Esegui la suite pertinente alle modifiche.
+- Esegui lint e type-check quando previsti dallo stack.
+- Controlla `git diff` e `git status --short`.
+- Non includere cache, snapshot, credenziali o altri artefatti runtime.

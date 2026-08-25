@@ -10,7 +10,6 @@ target/
 # IDE
 .idea/
 *.iml
-.vscode/
 *.swp
 
 # OS
@@ -23,6 +22,12 @@ Thumbs.db
 *.pem
 *.key
 secrets/
+.venv
+__pycache__/
+.pytest_cache/
+*.py[cod]
+*.egg-info/
+codesync/data/
 
 # Logs
 *.log
