@@ -46,13 +46,15 @@ Per il routing dettagliato consulta `AGENTS.md`.
 
 ## Convenzioni
 
-- `CODING-STANDARDS.md` raccoglie le convenzioni condivise.
+- `CODING-STANDARDS.md` raccoglie le convenzioni condivise per linguaggio, lasciare solo quelle utili
 - `SECURITY.md` raccoglie i requisiti di sicurezza.
 - I comandi di verifica specifici vanno aggiunti ad `AGENTS.md` nel nuovo
   progetto.
+- Questo file puo' essere riscritto con lo scope del nuovo progetto.
 
 ## Strumenti del repository template
 
 Il repository del template contiene anche strumenti di manutenzione e il
 servizio opzionale `codesync/`. Questi componenti servono allo sviluppo del
 template e non vengono copiati nei nuovi progetti dal cloner.
+codesync fornisce uno snapshot xml dell'intero progetto.
