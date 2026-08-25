@@ -11,10 +11,8 @@ sviluppo assistito dall'AI. Il materiale operativo principale è in
 - `.opencode/agents/`: persone specializzate e routing degli intenti;
 - `.opencode/references/`: checklist consultate dalle skill;
 - `AGENTS.md`: regole specifiche del progetto, da completare con comandi e
-  convenzioni dello stack;
-- `CLAUDE.md` e `.opencode/copilot-instructions.md`: integrazioni minime con
-  gli strumenti AI compatibili.
-
+  convenzioni dello stack.
+ 
 Le skill non devono essere caricate tutte in una sessione: l'agente sceglie
 quelle pertinenti al task.
 
@@ -44,7 +42,7 @@ interni al template che non servono al progetto applicativo.
 4. Verifica test, lint e comportamento runtime.
 5. Esegui review e controlli di sicurezza prima del merge.
 
-Per il routing dettagliato consulta `.opencode/agents/AGENTS.md`.
+Per il routing dettagliato consulta `AGENTS.md`.
 
 ## Convenzioni
 

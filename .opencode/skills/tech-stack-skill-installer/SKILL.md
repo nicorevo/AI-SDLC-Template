@@ -7,7 +7,7 @@ description: Automates discovering, fetching, and installing specialized skills,
 
 ## Overview
 
-Dynamically expand your AI development environment by discovering, fetching, and installing new skills, agent personas, and stack-specific guidelines. It pulls from trusted open-source catalogs, validates their Markdown format, and places them inside `.opencode/` while maintaining symlink compatibility with `.claude` and `.github`.
+Dynamically expand your AI development environment by discovering, fetching, and installing new skills, agent personas, and stack-specific guidelines. It pulls from trusted open-source catalogs, validates their Markdown format, and places them inside `.opencode/`. Multi-AI compatibility is provided by optional symlinks defined in `.opencode/linkToOthers.txt`.
 
 ## When to Use
 
@@ -65,20 +65,22 @@ If the new skill or agent provides a core workflow capability, update the **Inte
 | **Git Commit/PR Automativo** | `fullstack-developer` | `smart-git-automation` | Commit atomici e descrittivi |
 ```
 
-### Step 5: Verify Symlinks
-Ensure that files written to `.opencode/` are instantly visible to `.claude/` and `.github/`:
+### Step 5: Multi-AI Compatibility Symlinks (optional)
+
+If other AI tools should see the same files, the compatibility symlinks are
+listed in `.opencode/linkToOthers.txt`:
 
 ```bash
-# Verify symlink integrity
-ls -la .claude .github
+cat .opencode/linkToOthers.txt
 ```
-*Expected output: `.claude -> .opencode` and `.github -> .opencode`.*
+
+*Expected: `.claude`, `.github`, `.agents`, and `.cursor` each point to `.opencode`.*
 
 ---
 
 ## ⚠️ Anti-Patterns & Boundaries
 
-- **NEVER** edit files directly inside `.claude/` or `.github/` when installing skills; always write to `.opencode/` (the Single Source of Truth).
+- **NEVER** edit files through the compatibility symlinks (`.claude/`, `.github/`, etc.) when installing skills; always write to `.opencode/` (the Single Source of Truth).
 - **NEVER** install executable binary scripts or unverified dependencies without user confirmation.
 - **NEVER** overwrite existing core AI-SDLC skills (`spec-driven-development`, `test-driven-development`, etc.) unless explicitly instructed.
 
@@ -90,6 +92,6 @@ After running `tech-stack-skill-installer`:
 
 - [ ] New skill/agent file exists in `.opencode/skills/` or `.opencode/agents/`.
 - [ ] YAML frontmatter contains valid `name` and `description`.
-- [ ] The skill is accessible via `.claude/` and `.github/` through symlinks.
+- [ ] The skill is accessible via the compatibility symlinks (if enabled).
 - [ ] `AGENTS.md` has been updated with the new intent-routing entry.
 - [ ] OpenCode/Copilot can successfully discover and execute the newly installed skill.

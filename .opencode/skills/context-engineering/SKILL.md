@@ -23,7 +23,7 @@ Structure context from most persistent to most transient:
 
 ```
 ┌─────────────────────────────────────┐
-│  1. Rules Files (CLAUDE.md, etc.)   │ ← Always loaded, project-wide
+│  1. Rules Files (AGENTS.md, etc.)   │ ← Always loaded, project-wide
 ├─────────────────────────────────────┤
 │  2. Spec / Architecture Docs        │ ← Loaded per feature/session
 ├─────────────────────────────────────┤
@@ -39,7 +39,7 @@ Structure context from most persistent to most transient:
 
 Create a rules file that persists across sessions. This is the highest-leverage context you can provide.
 
-**CLAUDE.md** (for Claude Code):
+**AGENTS.md** (project rules file):
 ```markdown
 # Project: [Name]
 
@@ -72,10 +72,10 @@ Create a rules file that persists across sessions. This is the highest-leverage 
 ```
 
 **Equivalent files for other tools:**
+- `CLAUDE.md` (Claude Code)
 - `.cursorrules` or `.cursor/rules/*.md` (Cursor)
 - `.windsurfrules` (Windsurf)
 - `.github/copilot-instructions.md` (GitHub Copilot)
-- `AGENTS.md` (OpenAI Codex)
 
 ### Level 2: Specs and Architecture
 

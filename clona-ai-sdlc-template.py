@@ -16,9 +16,7 @@ TEMPLATE_ONLY_PATHS = (
     ".opencode/guide",
     ".opencode/hooks",
     ".opencode/plans",
-    ".opencode/linkToClaude.txt",
     "codesync",
-    "docs",
     "prj-context-extract.py",
     "clona-ai-sdlc-template.py",
 )

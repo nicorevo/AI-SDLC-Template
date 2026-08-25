@@ -48,6 +48,8 @@ ASSUMPTIONS I'M MAKING:
 
 Don't silently fill in ambiguous requirements. The spec's entire purpose is to surface misunderstandings *before* code gets written — assumptions are the most dangerous form of misunderstanding.
 
+**Save location:** `docs/SPEC.md` (create `docs/` if it does not exist). This is the project convention; do not invent another path.
+
 **Write a spec document covering these six core areas:**
 
 1. **Objective** — What are we building and why? Who is the user? What does success look like?
@@ -203,4 +205,4 @@ Before proceeding to implementation, confirm:
 - [ ] The human has reviewed and approved the spec
 - [ ] Success criteria are specific and testable
 - [ ] Boundaries (Always/Ask First/Never) are defined
-- [ ] The spec is saved to a file in the repository
+- [ ] The spec is saved to `docs/SPEC.md`
